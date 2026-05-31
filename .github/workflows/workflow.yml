@@ -1,12 +1,33 @@
 name: CI workflow
 
+# This workflow is triggered on pushes and pull requests to the main branch. It builds and tests the code using a Node.js 20 container.
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
+# This workflow will build and test the code on every push and pull request to the main branch.
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Using a Node.js container for JavaScript environment
     container: node:20-alpine
+
+    steps:
+      # Checkout the repository
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Install dependencies
+      # 'npm ci' is preferred in CI/CD because it installs exact versions from package-lock.json, ensuring consistent builds and faster installation compared to 'npm install'.
+      - name: Install dependencies
+        run: npm ci
+
+      # Linting is checking your code for syntactical and stylistic issues. Some examples are line spacing, using spaces or tabs for indentation, locating uninitialized or undefined variables, and missing parentheses.
+      - name: Lint with eslint
+        run: npm run lint
+
+      # Run unit tests with jest. The --coverage option generates a coverage report for the tests.
+      - name: Run unit tests with jest
+        run: npm test -- --coverage
